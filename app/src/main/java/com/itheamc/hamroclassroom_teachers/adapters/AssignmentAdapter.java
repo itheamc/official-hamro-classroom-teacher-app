@@ -50,7 +50,6 @@ public class AssignmentAdapter extends ListAdapter<Assignment, AssignmentAdapter
             super(assignmentViewBinding.getRoot());
             this.callbacks = callbacks;
             this.viewBinding = assignmentViewBinding;
-            this.viewBinding.submissionsButton.setOnClickListener(this);
             this.viewBinding.assignmentCardView.setOnClickListener(this);
             this.viewBinding.assignmentCardView.setOnLongClickListener(this);
 
@@ -60,7 +59,6 @@ public class AssignmentAdapter extends ListAdapter<Assignment, AssignmentAdapter
         public void onClick(View v) {
             int _id = v.getId();
             if (_id == viewBinding.assignmentCardView.getId()) callbacks.onClick(getAdapterPosition());
-            else if (_id == viewBinding.submissionsButton.getId()) callbacks.onSubmissionsClick(getAdapterPosition());
             else NotifyUtils.logDebug(TAG, "Unspecified view is clicked!!");
         }
 

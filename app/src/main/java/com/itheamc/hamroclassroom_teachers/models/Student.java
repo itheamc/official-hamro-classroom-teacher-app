@@ -23,6 +23,7 @@ public class Student {
     private String _roll_number;
     private String _school;
     private List<String> _subjects;
+    private List<String> _submissions;
     private Date _joined_on;
 
     // Constructor
@@ -31,7 +32,7 @@ public class Student {
 
 
     // Constructor with parameters
-    public Student(String _id, String _name, String _gender, String _image, String _phone, String _email, String _address, String _guardian, String _class, String _section, String _roll_number, String _school, List<String> _subjects, Date _joined_on) {
+    public Student(String _id, String _name, String _gender, String _image, String _phone, String _email, String _address, String _guardian, String _class, String _section, String _roll_number, String _school, List<String> _subjects, List<String> _submissions, Date _joined_on) {
         this._id = _id;
         this._name = _name;
         this._gender = _gender;
@@ -45,9 +46,9 @@ public class Student {
         this._roll_number = _roll_number;
         this._school = _school;
         this._subjects = _subjects;
+        this._submissions = _submissions;
         this._joined_on = _joined_on;
     }
-
 
     // Getters and Setters
     public String get_id() {
@@ -154,6 +155,14 @@ public class Student {
         this._subjects = _subjects;
     }
 
+    public List<String> get_submissions() {
+        return _submissions;
+    }
+
+    public void set_submissions(List<String> _submissions) {
+        this._submissions = _submissions;
+    }
+
     public Date get_joined_on() {
         return _joined_on;
     }
@@ -162,9 +171,9 @@ public class Student {
         this._joined_on = _joined_on;
     }
 
+
+
     // Overriding toString() method
-
-
     @Override
     public String toString() {
         return "Student{" +
@@ -181,6 +190,7 @@ public class Student {
                 ", _roll_number='" + _roll_number + '\'' +
                 ", _school='" + _school + '\'' +
                 ", _subjects=" + _subjects +
+                ", _submissions=" + _submissions +
                 ", _joined_on=" + _joined_on +
                 '}';
     }

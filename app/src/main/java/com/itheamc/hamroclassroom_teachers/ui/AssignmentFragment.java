@@ -233,7 +233,8 @@ public class AssignmentFragment extends Fragment implements StorageCallbacks, Fi
      * It will bi triggered only after all the images uploaded
      */
     private void storeOnFirestore() {
-        assignmentBinding.uploadedProgress.setText(R.string.adding_to_firestore);
+        assignmentBinding.uploadedProgress.setText(R.string.finalizing_uploads);
+        Subject subject = viewModel.getSubject();
 
         // Creating new assignment object
         Assignment assignment = new Assignment(
@@ -242,13 +243,14 @@ public class AssignmentFragment extends Fragment implements StorageCallbacks, Fi
                 new ArrayList<>(),
                 _title,
                 _desc,
+                subject.get_id(),
                 new Date(),
                 new Date(),
                 0
         );
 
         FirestoreHandler.getInstance(this)
-                .addAssignment(viewModel.getSubject().get_id(), assignment);
+                .addAssignment(subject.get_id(), assignment);
     }
 
 
