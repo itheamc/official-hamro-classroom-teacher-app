@@ -29,9 +29,16 @@ public class MainViewModel extends ViewModel {
     Lists
      */
     private List<School> schools;
+    private List<Student> students;
     private List<Subject> subjects;
     private List<Assignment> assignments;
+    private List<Submission> submissions;
     private List<Notice> notices;
+
+    /*
+   Boolean
+    */
+    private boolean isSubjectUpdating;
 
 
     /*
@@ -93,6 +100,14 @@ public class MainViewModel extends ViewModel {
         this.schools = schools;
     }
 
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
+    }
+
     public List<Subject> getSubjects() {
         return subjects;
     }
@@ -109,6 +124,14 @@ public class MainViewModel extends ViewModel {
         this.assignments = assignments;
     }
 
+    public List<Submission> getSubmissions() {
+        return submissions;
+    }
+
+    public void setSubmissions(List<Submission> submissions) {
+        this.submissions = submissions;
+    }
+
     public List<Notice> getNotices() {
         return notices;
     }
@@ -117,9 +140,17 @@ public class MainViewModel extends ViewModel {
         this.notices = notices;
     }
 
+    public boolean isSubjectUpdating() {
+        return isSubjectUpdating;
+    }
+
+    public void setSubjectUpdating(boolean subjectUpdating) {
+        isSubjectUpdating = subjectUpdating;
+    }
+
     /*
-    Function to update subject in List<Subject> subjects
-     */
+            Function to update subject in List<Subject> subjects
+             */
     public void modifySubjectItems(Subject _subject) {
         List<Subject> subjectList = new ArrayList<>();
         for (Subject sub: subjects) {

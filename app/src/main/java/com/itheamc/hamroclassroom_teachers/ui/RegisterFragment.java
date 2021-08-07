@@ -208,7 +208,7 @@ public class RegisterFragment extends Fragment implements FirestoreCallbacks, Ad
      * -------------------------------------------------------------------
      */
     @Override
-    public void onSuccess(User user, Student student, School school, List<School> schools, List<Subject> subjects, List<Assignment> assignments, Submission submissions, List<Notice> notices) {
+    public void onSuccess(User user, List<School> schools, List<Student> students, List<Subject> subjects, List<Assignment> assignments, List<Submission> submissions, List<Notice> notices) {
         if (registerBinding == null) return;
         if (getActivity() != null) storeInfo(user);
         ViewUtils.hideProgressBar(registerBinding.overlayLayout);

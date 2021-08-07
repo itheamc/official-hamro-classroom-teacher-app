@@ -13,12 +13,11 @@ import java.util.List;
 public interface FirestoreCallbacks {
     void onSuccess(
             User user,
-            Student student,
-            School school,
             List<School> schools,
+            List<Student> students,
             List<Subject> subjects,
             List<Assignment> assignments,
-            Submission submissions,
+            List<Submission> submissions,
             List<Notice> notices);
     void onFailure(Exception e);
 }
