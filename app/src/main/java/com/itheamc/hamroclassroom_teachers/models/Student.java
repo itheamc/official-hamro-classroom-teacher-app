@@ -2,12 +2,15 @@ package com.itheamc.hamroclassroom_teachers.models;
 
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.BindingAdapter;
+import androidx.recyclerview.widget.DiffUtil;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class Student {
     private String _id;
@@ -21,9 +24,12 @@ public class Student {
     private String _class;
     private String _section;
     private String _roll_number;
-    private String _school;
-    private List<String> _subjects;
-    private List<String> _submissions;
+    private String _school_ref;
+    private School _school;
+    private List<String> _subjects_ref;
+    private List<Subject> _subjects;
+    private List<String> _submissions_ref;
+    private List<Submission> _submissions;
     private Date _joined_on;
 
     // Constructor
@@ -32,7 +38,7 @@ public class Student {
 
 
     // Constructor with parameters
-    public Student(String _id, String _name, String _gender, String _image, String _phone, String _email, String _address, String _guardian, String _class, String _section, String _roll_number, String _school, List<String> _subjects, List<String> _submissions, Date _joined_on) {
+    public Student(String _id, String _name, String _gender, String _image, String _phone, String _email, String _address, String _guardian, String _class, String _section, String _roll_number, String _school_ref, School _school, List<String> _subjects_ref, List<Subject> _subjects, List<String> _submissions_ref, List<Submission> _submissions, Date _joined_on) {
         this._id = _id;
         this._name = _name;
         this._gender = _gender;
@@ -44,8 +50,11 @@ public class Student {
         this._class = _class;
         this._section = _section;
         this._roll_number = _roll_number;
+        this._school_ref = _school_ref;
         this._school = _school;
+        this._subjects_ref = _subjects_ref;
         this._subjects = _subjects;
+        this._submissions_ref = _submissions_ref;
         this._submissions = _submissions;
         this._joined_on = _joined_on;
     }
@@ -139,27 +148,51 @@ public class Student {
         this._roll_number = _roll_number;
     }
 
-    public String get_school() {
+    public String get_school_ref() {
+        return _school_ref;
+    }
+
+    public void set_school_ref(String _school_ref) {
+        this._school_ref = _school_ref;
+    }
+
+    public School get_school() {
         return _school;
     }
 
-    public void set_school(String _school) {
+    public void set_school(School _school) {
         this._school = _school;
     }
 
-    public List<String> get_subjects() {
+    public List<String> get_subjects_ref() {
+        return _subjects_ref;
+    }
+
+    public void set_subjects_ref(List<String> _subjects_ref) {
+        this._subjects_ref = _subjects_ref;
+    }
+
+    public List<Subject> get_subjects() {
         return _subjects;
     }
 
-    public void set_subjects(List<String> _subjects) {
+    public void set_subjects(List<Subject> _subjects) {
         this._subjects = _subjects;
     }
 
-    public List<String> get_submissions() {
+    public List<String> get_submissions_ref() {
+        return _submissions_ref;
+    }
+
+    public void set_submissions_ref(List<String> _submissions_ref) {
+        this._submissions_ref = _submissions_ref;
+    }
+
+    public List<Submission> get_submissions() {
         return _submissions;
     }
 
-    public void set_submissions(List<String> _submissions) {
+    public void set_submissions(List<Submission> _submissions) {
         this._submissions = _submissions;
     }
 
@@ -170,8 +203,6 @@ public class Student {
     public void set_joined_on(Date _joined_on) {
         this._joined_on = _joined_on;
     }
-
-
 
     // Overriding toString() method
     @Override
@@ -188,12 +219,57 @@ public class Student {
                 ", _class='" + _class + '\'' +
                 ", _section='" + _section + '\'' +
                 ", _roll_number='" + _roll_number + '\'' +
-                ", _school='" + _school + '\'' +
+                ", _school_ref='" + _school_ref + '\'' +
+                ", _school=" + _school +
+                ", _subjects_ref=" + _subjects_ref +
                 ", _subjects=" + _subjects +
+                ", _submissions_ref=" + _submissions_ref +
                 ", _submissions=" + _submissions +
                 ", _joined_on=" + _joined_on +
                 '}';
     }
+
+    // equals() Method
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student student = (Student) o;
+        return Objects.equals(get_id(), student.get_id()) &&
+                Objects.equals(get_name(), student.get_name()) &&
+                Objects.equals(get_gender(), student.get_gender()) &&
+                Objects.equals(get_image(), student.get_image()) &&
+                Objects.equals(get_phone(), student.get_phone()) &&
+                Objects.equals(get_email(), student.get_email()) &&
+                Objects.equals(get_address(), student.get_address()) &&
+                Objects.equals(get_guardian(), student.get_guardian()) &&
+                Objects.equals(get_class(), student.get_class()) &&
+                Objects.equals(get_section(), student.get_section()) &&
+                Objects.equals(get_roll_number(), student.get_roll_number()) &&
+                Objects.equals(get_school_ref(), student.get_school_ref()) &&
+                Objects.equals(get_school(), student.get_school()) &&
+                Objects.equals(get_subjects_ref(), student.get_subjects_ref()) &&
+                Objects.equals(get_subjects(), student.get_subjects()) &&
+                Objects.equals(get_submissions_ref(), student.get_submissions_ref()) &&
+                Objects.equals(get_submissions(), student.get_submissions()) &&
+                Objects.equals(get_joined_on(), student.get_joined_on());
+    }
+
+    // DiffUtil.ItemCallbacks
+    public static DiffUtil.ItemCallback<Student> studentItemCallback = new DiffUtil.ItemCallback<Student>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Student oldItem, @NonNull Student newItem) {
+            return newItem.equals(oldItem);
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Student oldItem, @NonNull Student newItem) {
+            return false;
+        }
+    };
+
 
     // Binding Adapter
     @BindingAdapter("android:imageButtonSrc")

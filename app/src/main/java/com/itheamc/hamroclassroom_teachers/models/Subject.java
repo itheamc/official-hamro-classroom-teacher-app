@@ -15,12 +15,13 @@ import java.util.List;
 import java.util.Objects;
 
 public class Subject {
-
     private String _id;
     private String _name;
     private String _class;
-    private List<String> _teacher;  // It will contain id, name and image of the teacher
-    private List<String> _school;   // It will contain id and name of the school
+    private String _teacher_ref;
+    private User _teacher;
+    private String _school_ref;
+    private School _school;
     private String _join_url;
     private String _start_time;
     private Date _started_on;
@@ -33,11 +34,13 @@ public class Subject {
     }
 
     // Constructor with parameters
-    public Subject(String _id, String _name, String _class, List<String> _teacher, List<String> _school, String _join_url, String _start_time, Date _started_on, int _total_students, boolean _hidden, boolean _added) {
+    public Subject(String _id, String _name, String _class, String _teacher_ref, User _teacher, String _school_ref, School _school, String _join_url, String _start_time, Date _started_on, int _total_students, boolean _hidden, boolean _added) {
         this._id = _id;
         this._name = _name;
         this._class = _class;
+        this._teacher_ref = _teacher_ref;
         this._teacher = _teacher;
+        this._school_ref = _school_ref;
         this._school = _school;
         this._join_url = _join_url;
         this._start_time = _start_time;
@@ -72,19 +75,35 @@ public class Subject {
         this._class = _class;
     }
 
-    public List<String> get_teacher() {
+    public String get_teacher_ref() {
+        return _teacher_ref;
+    }
+
+    public void set_teacher_ref(String _teacher_ref) {
+        this._teacher_ref = _teacher_ref;
+    }
+
+    public User get_teacher() {
         return _teacher;
     }
 
-    public void set_teacher(List<String> _teacher) {
+    public void set_teacher(User _teacher) {
         this._teacher = _teacher;
     }
 
-    public List<String> get_school() {
+    public String get_school_ref() {
+        return _school_ref;
+    }
+
+    public void set_school_ref(String _school_ref) {
+        this._school_ref = _school_ref;
+    }
+
+    public School get_school() {
         return _school;
     }
 
-    public void set_school(List<String> _school) {
+    public void set_school(School _school) {
         this._school = _school;
     }
 
@@ -143,7 +162,9 @@ public class Subject {
                 "_id='" + _id + '\'' +
                 ", _name='" + _name + '\'' +
                 ", _class='" + _class + '\'' +
+                ", _teacher_ref='" + _teacher_ref + '\'' +
                 ", _teacher=" + _teacher +
+                ", _school_ref='" + _school_ref + '\'' +
                 ", _school=" + _school +
                 ", _join_url='" + _join_url + '\'' +
                 ", _start_time='" + _start_time + '\'' +
@@ -154,8 +175,8 @@ public class Subject {
                 '}';
     }
 
-    // Overriding equals() method
 
+    // Overriding equals() method
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -167,12 +188,15 @@ public class Subject {
                 Objects.equals(get_id(), subject.get_id()) &&
                 Objects.equals(get_name(), subject.get_name()) &&
                 Objects.equals(get_class(), subject.get_class()) &&
+                Objects.equals(get_teacher_ref(), subject.get_teacher_ref()) &&
                 Objects.equals(get_teacher(), subject.get_teacher()) &&
+                Objects.equals(get_school_ref(), subject.get_school_ref()) &&
                 Objects.equals(get_school(), subject.get_school()) &&
                 Objects.equals(get_join_url(), subject.get_join_url()) &&
                 Objects.equals(get_start_time(), subject.get_start_time()) &&
                 Objects.equals(get_started_on(), subject.get_started_on());
     }
+
 
 
     // DiffUtil.ItemCallback
