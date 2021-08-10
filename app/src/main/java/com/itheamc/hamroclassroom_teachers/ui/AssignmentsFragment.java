@@ -152,7 +152,7 @@ public class AssignmentsFragment extends Fragment implements AssignmentCallbacks
             return;
         }
 
-        FirestoreHandler.getInstance(this).updateAssignmentTitle(subId, assignId, updatedTitle);
+        FirestoreHandler.getInstance(this).updateAssignmentTitle(assignId, updatedTitle);
         ViewUtils.handleProgressBar(bottomSheetBinding.progressBarContainer);
         ViewUtils.disableViews(updatedTitleInputLayout, updateTitleButton);
 

@@ -149,9 +149,9 @@ public class MainViewModel extends ViewModel {
     }
 
     /*
-            Function to update subject in List<Subject> subjects
-             */
-    public void modifySubjectItems(Subject _subject) {
+       Function to update subject in List<Subject> subjects
+          */
+    public void addSubjectToList(Subject _subject) {
         List<Subject> subjectList = new ArrayList<>();
         for (Subject sub: subjects) {
             if (sub.get_id().equals(_subject.get_id())) {

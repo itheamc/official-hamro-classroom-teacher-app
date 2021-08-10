@@ -114,11 +114,9 @@ public class SubmissionFragment extends Fragment implements FirestoreCallbacks {
         String _comment = null;
         if (commentEditText != null) _comment = commentEditText.getText().toString().trim();
 
-        String _subjectId = viewModel.getSubject().get_id();
-        String _assignmentId = viewModel.getAssignment().get_id();
         String _submissionId = viewModel.getSubmission().get_id();
 
-        if (_subjectId == null || _assignmentId == null || _submissionId == null) {
+        if (_submissionId == null) {
             if (getContext() != null) NotifyUtils.showToast(getContext(), getString(R.string.went_wrong_message));
             return;
         }
@@ -128,7 +126,7 @@ public class SubmissionFragment extends Fragment implements FirestoreCallbacks {
         _data.put("_checked", true);
         _data.put("_checked_date", new Date());
 
-        FirestoreHandler.getInstance(this).updateSubmission(_subjectId, _assignmentId, _submissionId, _data);
+        FirestoreHandler.getInstance(this).updateSubmission(_submissionId, _data);
         ViewUtils.handleProgressBar(submissionBinding.progressBarContainer);
         ViewUtils.disableViews(submissionBinding.commentInputLayout, submissionBinding.finishCheckingButton);
     }

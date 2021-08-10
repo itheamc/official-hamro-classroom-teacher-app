@@ -28,7 +28,7 @@ public class Student {
     private School _school;
     private List<String> _subjects_ref;
     private List<Subject> _subjects;
-    private List<String> _submissions_ref;
+    private List<String> _submissions_ref;      // Consists the id of the assignment being submitted
     private List<Submission> _submissions;
     private Date _joined_on;
 

@@ -17,6 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.itheamc.hamroclassroom_teachers.models.Assignment.assignmentItemCallback;
 
+import java.text.DateFormat;
+
 public class AssignmentAdapter extends ListAdapter<Assignment, AssignmentAdapter.AssignmentViewHolder> {
     private static final String TAG = "AssignmentAdapter";
     private final AssignmentCallbacks callbacks;
@@ -40,6 +42,8 @@ public class AssignmentAdapter extends ListAdapter<Assignment, AssignmentAdapter
         Assignment assignment = getItem(position);
         holder.viewBinding.setAssignment(assignment);
         holder.viewBinding.setNumber(String.valueOf(position + 1));
+        String formattedDate = DateFormat.getDateInstance().format(assignment.get_assigned_date());
+        holder.viewBinding.setDate(formattedDate);
     }
 
     protected static class AssignmentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {

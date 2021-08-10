@@ -139,8 +139,6 @@ public class AssignmentFragment extends Fragment implements StorageCallbacks, Fi
         // Initializing imageList
         imagesList = new ArrayList<>();
 
-        // Setting assignment Id
-        _assignment_id = IdGenerator.generateRandomId();
 
         // Activity Result launcher to listen the result of the multi image picker
         imagePickerResultLauncher = registerForActivityResult(
@@ -189,6 +187,10 @@ public class AssignmentFragment extends Fragment implements StorageCallbacks, Fi
 
             ViewUtils.showProgressBar(assignmentBinding.progressBarContainer);
             ViewUtils.disableViews(assignmentBinding.addAssignmentButton, titleInputLayout, descInputLayout);
+
+            // Setting assignment Id
+            _assignment_id = IdGenerator.generateRandomId();
+
             if (imagesUri == null || imagesUri.size() < 1) {
                 storeOnFirestore();
                 return;
@@ -215,14 +217,13 @@ public class AssignmentFragment extends Fragment implements StorageCallbacks, Fi
      * It will be triggered continuously until all the images will be uploaded
      */
     private void handleImageUpload() {
-        Assignment assignment = viewModel.getAssignment();
         Subject subject = viewModel.getSubject();
         Bitmap bitmap = ImageUtils.getInstance(getActivity()).getBitmap(imagesUri.get(uploadCount));
         if (bitmap != null) {
             if (!is_uploading) is_uploading = true;
             StorageHandler.getInstance(this)
                     .uploadImage(bitmap,
-                            "image" + "-" + (uploadCount + 1) + ".jpg",
+                            new Date().getTime() + (uploadCount + 1) + ".jpg",
                             subject.get_id(),
                             _assignment_id);
         }
@@ -253,11 +254,11 @@ public class AssignmentFragment extends Fragment implements StorageCallbacks, Fi
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new Date(),
-                new Date()
+                new Date(new Date().getTime() + (86400000 * 2))
         );
 
         FirestoreHandler.getInstance(this)
-                .addAssignment(subject.get_id(), assignment);
+                .addAssignment(assignment);
     }
 
 

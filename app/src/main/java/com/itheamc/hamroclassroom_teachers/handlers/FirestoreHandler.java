@@ -6,7 +6,10 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.core.os.HandlerCompat;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.itheamc.hamroclassroom_teachers.callbacks.FirestoreCallbacks;
 import com.itheamc.hamroclassroom_teachers.models.Assignment;
 import com.itheamc.hamroclassroom_teachers.models.Notice;
@@ -16,6 +19,7 @@ import com.itheamc.hamroclassroom_teachers.models.Subject;
 import com.itheamc.hamroclassroom_teachers.models.Submission;
 import com.itheamc.hamroclassroom_teachers.models.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -107,7 +111,7 @@ public class FirestoreHandler {
      */
     public void getSubjects(String userId) {
         firestore.collection("subjects")
-                .whereArrayContains("_teacher_ref", userId)
+                .whereEqualTo("_teacher_ref", userId)
                 .get()
                 .addOnSuccessListener(executorService, queryDocumentSnapshots -> {
                     if (queryDocumentSnapshots != null) {
@@ -182,10 +186,9 @@ public class FirestoreHandler {
      * Function to get assignments list from the cloud firestore
      * --------------------------------------------------------------------------------------
      */
-    public void getAssignments(String subjectId) {
-        firestore.collection("subjects")
-                .document(subjectId)
-                .collection("assignments")
+    public void getAssignments(String subject_ref) {
+        firestore.collection("assignments")
+                .whereEqualTo("_subject_ref", subject_ref)
                 .get()
                 .addOnSuccessListener(executorService, queryDocumentSnapshots -> {
                     if (queryDocumentSnapshots != null) {
@@ -203,10 +206,8 @@ public class FirestoreHandler {
      * Function to add assignment in the Firestore
      * --------------------------------------------------------------------------------------
      */
-    public void addAssignment(String subjectId, Assignment assignment) {
-        firestore.collection("subjects")
-                .document(subjectId)
-                .collection("assignments")
+    public void addAssignment(Assignment assignment) {
+        firestore.collection("assignments")
                 .document(assignment.get_id())
                 .set(assignment)
                 .addOnSuccessListener(executorService, unused -> notifyOnSuccess(
@@ -225,10 +226,8 @@ public class FirestoreHandler {
      * Function to update assignment title
      * --------------------------------------------------------------------------------------
      */
-    public void updateAssignmentTitle(String subjectId, String assignmentId, String updatedTitle) {
-        firestore.collection("subjects")
-                .document(subjectId)
-                .collection("assignments")
+    public void updateAssignmentTitle(String assignmentId, String updatedTitle) {
+        firestore.collection("assignments")
                 .document(assignmentId)
                 .update("_title", updatedTitle)
                 .addOnSuccessListener(executorService, unused -> notifyOnSuccess(
@@ -247,13 +246,10 @@ public class FirestoreHandler {
      * Function to get submissions list from the cloud firestore
      * --------------------------------------------------------------------------------------
      */
-    public void getSubmissions(String subjectId, String assignmentId) {
+    public void getSubmissions(String assignmentId) {
         firestore
-                .collection("subjects")
-                .document(subjectId)
-                .collection("assignments")
-                .document(assignmentId)
                 .collection("submissions")
+                .whereEqualTo("_assignment_ref", assignmentId)
                 .get()
                 .addOnSuccessListener(executorService, queryDocumentSnapshots -> {
                     if (queryDocumentSnapshots != null) {
@@ -272,12 +268,8 @@ public class FirestoreHandler {
      * Function to update submission in the Firestore
      * --------------------------------------------------------------------------------------
      */
-    public void updateSubmission(String subjectId, String assignmentId, String submissionId, Map<String, Object> data) {
-        firestore.collection("subjects")
-                .document(subjectId)
-                .collection("assignments")
-                .document(assignmentId)
-                .collection("submissions")
+    public void updateSubmission(String submissionId, Map<String, Object> data) {
+        firestore.collection("submissions")
                 .document(submissionId)
                 .update(data)
                 .addOnSuccessListener(executorService, unused -> {
@@ -292,9 +284,9 @@ public class FirestoreHandler {
      * Function to get Student from the Firestore
      * --------------------------------------------------------------------------------------
      */
-    public void getStudents(String studentId) {
+    public void getStudents(String subjectId) {
         firestore.collection("students")
-                .whereEqualTo("_id", studentId)
+                .whereArrayContains("_subjects_ref", subjectId)
                 .get()
                 .addOnSuccessListener(executorService, queryDocumentSnapshots -> {
                     if (queryDocumentSnapshots != null) {
@@ -312,20 +304,34 @@ public class FirestoreHandler {
     }
 
     /**
-     * Function to get notifications list from the cloud firestore
+     * Function to add notice to the cloud firestore
      * --------------------------------------------------------------------------------------
      */
-    public void getNotifications(String schoolId, String _class) {
-        firestore.collection("notifications")
-                .whereArrayContains("_school", schoolId)
-                .whereEqualTo("_class", _class)
+    public void notifyStudents(Notice notice) {
+        firestore.collection("notices")
+                .document(notice.get_id())
+                .set(notice)
+                .addOnSuccessListener(executorService, unused -> {
+                    notifyOnSuccess(null, null, null, null, null, null, null);
+                })
+                .addOnFailureListener(executorService, this::notifyOnFailure);
+    }
+
+
+    /**
+     * Function to get notice list from the cloud firestore
+     * --------------------------------------------------------------------------------------
+     */
+    public void getNotices(String teacher_ref) {
+        firestore.collection("notices")
+                .whereEqualTo("_teacher_ref", teacher_ref)
                 .get()
                 .addOnSuccessListener(executorService, queryDocumentSnapshots -> {
-                    if (queryDocumentSnapshots != null) {
+                    if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty()) {
                         List<Notice> notices = queryDocumentSnapshots.toObjects(Notice.class);
                         notifyOnSuccess(null, null, null, null, null, null, notices);
                     } else {
-                        notifyOnFailure(new Exception("Subjects not found"));
+                        notifyOnFailure(new Exception("You have not created any notice yet."));
                     }
                 })
                 .addOnFailureListener(executorService, this::notifyOnFailure);
@@ -359,16 +365,14 @@ public class FirestoreHandler {
      */
     public void getSchool(String _schoolId) {
         firestore.collection("schools")
-                .whereEqualTo("_id", _schoolId)
+                .document(_schoolId)
                 .get()
-                .addOnSuccessListener(executorService, queryDocumentSnapshots -> {
-                    if (queryDocumentSnapshots != null) {
-                        List<School> schools = queryDocumentSnapshots.toObjects(School.class);
-                        if (schools.isEmpty()) {
-                            notifyOnFailure(new Exception("Schools not found"));
-                        } else {
-                            notifyOnSuccess(null, schools, null, null, null, null, null);
-                        }
+                .addOnSuccessListener(executorService, documentSnapshot -> {
+                    if (documentSnapshot != null) {
+                        List<School> schools = new ArrayList<>();
+                        School school = documentSnapshot.toObject(School.class);
+                        schools.add(school);
+                        notifyOnSuccess(null, schools, null, null, null, null, null);
                     } else {
                         notifyOnFailure(new Exception("Schools not found"));
                     }

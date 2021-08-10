@@ -34,6 +34,7 @@ import com.itheamc.hamroclassroom_teachers.models.Student;
 import com.itheamc.hamroclassroom_teachers.models.Submission;
 import com.itheamc.hamroclassroom_teachers.models.Subject;
 import com.itheamc.hamroclassroom_teachers.models.User;
+import com.itheamc.hamroclassroom_teachers.utils.LocalStorage;
 import com.itheamc.hamroclassroom_teachers.utils.NotifyUtils;
 import com.itheamc.hamroclassroom_teachers.utils.IdGenerator;
 import com.itheamc.hamroclassroom_teachers.utils.TimePickers;
@@ -224,8 +225,11 @@ public class SubjectFragment extends Fragment implements FirestoreCallbacks, Sch
             return;
         }
 
+        ViewUtils.showProgressBar(subjectBinding.subjectProgressBarContainer);
+        ViewUtils.disableViews(subjectInputLayout, classInputLayout, schoolInputLayout, classTimeInputLayout, addEditBtn);
+
         if (!viewModel.isSubjectUpdating()) {
-//            if (getActivity() != null) user = LocalStorage.getInstance(getActivity()).getUser();
+            user = viewModel.getUser();
 
             if (user == null) {
                 FirestoreHandler.getInstance(this).getUser(FirebaseAuth.getInstance().getUid());
@@ -259,7 +263,6 @@ public class SubjectFragment extends Fragment implements FirestoreCallbacks, Sch
             );
 
             FirestoreHandler.getInstance(this).addSubject(subject);
-            ViewUtils.handleProgressBar(subjectBinding.subjectProgressBarContainer);
             return;
         }
 
@@ -273,16 +276,17 @@ public class SubjectFragment extends Fragment implements FirestoreCallbacks, Sch
 
         if (!TextUtils.isEmpty(_name) && !_name.equals(subject.get_name())) data.put("_name", _name);
         if (!TextUtils.isEmpty(_class) && !_class.equals(subject.get_class())) data.put("_class", _class);
-        if (school != null) data.put("_school", Arrays.asList(this.school.get_id(), this.school.get_name()));
+        if (school != null) data.put("_school-ref", school.get_id());
         if (!TextUtils.isEmpty(_time) && !_time.equals(subject.get_start_time())) data.put("_start_time", _time);
 
         if (data.isEmpty()) {
             if (getContext() != null) NotifyUtils.showToast(getContext(), "You have not make any changes");
+            ViewUtils.hideProgressBar(subjectBinding.subjectProgressBarContainer);
+            ViewUtils.enableViews(subjectInputLayout, classInputLayout, schoolInputLayout, classTimeInputLayout, addEditBtn);
             return;
         }
 
         FirestoreHandler.getInstance(this).updateSubject(subject.get_id(), data);
-        ViewUtils.handleProgressBar(subjectBinding.subjectProgressBarContainer);
     }
 
 
@@ -353,7 +357,6 @@ public class SubjectFragment extends Fragment implements FirestoreCallbacks, Sch
             return;
         }
         if (user != null) {
-//            if (getActivity() != null) LocalStorage.getInstance(getActivity()).storeUser(user);
             this.user = user;
             viewModel.setUser(user);
             addSubject();
@@ -362,6 +365,7 @@ public class SubjectFragment extends Fragment implements FirestoreCallbacks, Sch
 
         ViewUtils.hideProgressBar(subjectBinding.subjectProgressBarContainer);
         ViewUtils.clearEditTexts(subEditText, classEditText, schoolEditText, timeEditText);   // Calling function to clear the EditTexts after adding
+        ViewUtils.enableViews(subjectInputLayout, classInputLayout, schoolInputLayout, classTimeInputLayout, addEditBtn);
         if (!viewModel.isSubjectUpdating()) {
             NotifyUtils.showToast(getContext(), "Added Successfully");
         }
@@ -377,6 +381,7 @@ public class SubjectFragment extends Fragment implements FirestoreCallbacks, Sch
     public void onFailure(Exception e) {
         if (subjectBinding == null) return;
         ViewUtils.hideProgressBar(subjectBinding.subjectProgressBarContainer);
+        ViewUtils.enableViews(subjectInputLayout, classInputLayout, schoolInputLayout, classTimeInputLayout, addEditBtn);
         NotifyUtils.showToast(getContext(), getString(R.string.went_wrong_message));
         NotifyUtils.logDebug(TAG, "onUserInfoRetrievedError: - " + e.getMessage());
     }

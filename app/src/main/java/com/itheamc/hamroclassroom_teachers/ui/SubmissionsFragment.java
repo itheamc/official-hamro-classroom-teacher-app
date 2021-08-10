@@ -85,8 +85,8 @@ public class SubmissionsFragment extends Fragment implements FirestoreCallbacks,
     Functions to get Submissions from cloud
      */
     private void getSubmissions() {
-        if (viewModel.getSubject() != null && viewModel.getAssignment() != null) {
-            FirestoreHandler.getInstance(this).getSubmissions(viewModel.getSubject().get_id(), viewModel.getAssignment().get_id());
+        if (viewModel.getAssignment() != null) {
+            FirestoreHandler.getInstance(this).getSubmissions(viewModel.getAssignment().get_id());
             ViewUtils.showProgressBar(submissionsBinding.progressBarContainer);
         }
     }
