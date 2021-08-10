@@ -148,7 +148,11 @@ public class RegisterFragment extends Fragment implements FirestoreCallbacks, Ad
                     _email,
                     _address,
                     new ArrayList<>(),
+                    null,
                     new ArrayList<>(),
+                    null,
+                    new ArrayList<>(),
+                    null,
                     new Date()
             );
 

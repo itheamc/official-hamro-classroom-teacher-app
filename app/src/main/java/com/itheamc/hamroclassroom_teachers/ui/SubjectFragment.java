@@ -34,7 +34,6 @@ import com.itheamc.hamroclassroom_teachers.models.Student;
 import com.itheamc.hamroclassroom_teachers.models.Submission;
 import com.itheamc.hamroclassroom_teachers.models.Subject;
 import com.itheamc.hamroclassroom_teachers.models.User;
-import com.itheamc.hamroclassroom_teachers.utils.LocalStorage;
 import com.itheamc.hamroclassroom_teachers.utils.NotifyUtils;
 import com.itheamc.hamroclassroom_teachers.utils.IdGenerator;
 import com.itheamc.hamroclassroom_teachers.utils.TimePickers;
@@ -209,7 +208,7 @@ public class SubjectFragment extends Fragment implements FirestoreCallbacks, Sch
 
         if (subEditText != null) subEditText.setText(subject.get_name());
         if (classEditText != null) classEditText.setText(subject.get_class());
-        if (schoolEditText != null) schoolEditText.setText(subject.get_school().get(1));
+        if (schoolEditText != null) schoolEditText.setText(subject.get_school().get_name());
         if (timeEditText != null) timeEditText.setText(subject.get_start_time());
         addEditBtn.setText(getString(R.string.update));
     }
@@ -244,12 +243,14 @@ public class SubjectFragment extends Fragment implements FirestoreCallbacks, Sch
     private void addSubject() {
         if (!viewModel.isSubjectUpdating()) {
             Subject subject = new Subject(
-                    IdGenerator.generateId(),
+                    IdGenerator.generateRandomId(),
                     _subject,
                     _class,
-                    Arrays.asList(user.get_id(), user.get_name(), user.get_image()),
-                    Arrays.asList(school.get_id(), school.get_name()),
-                    "null",
+                    user.get_id(),
+                    null,
+                    school.get_id(),
+                    null,
+                    "",
                     _time,
                     new Date(),
                     0,

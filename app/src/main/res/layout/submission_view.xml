@@ -47,7 +47,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:fontFamily="sans-serif-condensed-medium"
-                    android:text="@{submission._submitted_by.size() ==2 ? submission._submitted_by.get(1) : `Unknown`}"
+                    android:text="@{submission._student._name}"
                     android:textSize="20sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"

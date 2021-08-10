@@ -71,7 +71,7 @@
                     android:ellipsize="end"
                     android:fontFamily="sans-serif-condensed"
                     android:maxLines="1"
-                    android:text="@{subject._school.get(1)}"
+                    android:text="@{subject._school._name}"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="@+id/subjectClass"
                     app:layout_constraintEnd_toEndOf="parent"

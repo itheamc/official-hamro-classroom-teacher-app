@@ -259,7 +259,6 @@ public class HomeFragment extends Fragment implements SubjectCallbacks, Firestor
 
         ViewUtils.hideProgressBar(homeBinding.progressBarContainer);
         ViewUtils.handleRefreshing(homeBinding.swipeRefreshLayout);
-        ViewUtils.handleRefreshing(homeBinding.swipeRefreshLayout);
         if (getContext() != null) NotifyUtils.showToast(getContext(), e.getMessage());
         NotifyUtils.logError(TAG, "onFailure: ", e);
     }

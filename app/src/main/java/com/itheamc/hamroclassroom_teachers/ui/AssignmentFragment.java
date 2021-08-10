@@ -42,6 +42,7 @@ import com.itheamc.hamroclassroom_teachers.models.Submission;
 import com.itheamc.hamroclassroom_teachers.models.User;
 import com.itheamc.hamroclassroom_teachers.utils.IdGenerator;
 import com.itheamc.hamroclassroom_teachers.utils.ImageUtils;
+import com.itheamc.hamroclassroom_teachers.utils.LocalStorage;
 import com.itheamc.hamroclassroom_teachers.utils.NotifyUtils;
 import com.itheamc.hamroclassroom_teachers.utils.ViewUtils;
 import com.itheamc.hamroclassroom_teachers.viewmodels.MainViewModel;
@@ -139,7 +140,7 @@ public class AssignmentFragment extends Fragment implements StorageCallbacks, Fi
         imagesList = new ArrayList<>();
 
         // Setting assignment Id
-        _assignment_id = IdGenerator.generateId();
+        _assignment_id = IdGenerator.generateRandomId();
 
         // Activity Result launcher to listen the result of the multi image picker
         imagePickerResultLauncher = registerForActivityResult(
@@ -233,8 +234,10 @@ public class AssignmentFragment extends Fragment implements StorageCallbacks, Fi
      * It will bi triggered only after all the images uploaded
      */
     private void storeOnFirestore() {
+        if (getActivity() == null) return;
         assignmentBinding.uploadedProgress.setText(R.string.finalizing_uploads);
         Subject subject = viewModel.getSubject();
+        String userId = LocalStorage.getInstance(getActivity()).getUserId();
 
         // Creating new assignment object
         Assignment assignment = new Assignment(
@@ -243,10 +246,14 @@ public class AssignmentFragment extends Fragment implements StorageCallbacks, Fi
                 new ArrayList<>(),
                 _title,
                 _desc,
+                userId,
+                null,
                 subject.get_id(),
+                null,
+                new ArrayList<>(),
+                new ArrayList<>(),
                 new Date(),
-                new Date(),
-                0
+                new Date()
         );
 
         FirestoreHandler.getInstance(this)

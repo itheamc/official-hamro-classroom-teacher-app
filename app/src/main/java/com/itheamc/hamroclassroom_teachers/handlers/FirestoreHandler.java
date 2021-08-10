@@ -107,7 +107,7 @@ public class FirestoreHandler {
      */
     public void getSubjects(String userId) {
         firestore.collection("subjects")
-                .whereArrayContains("_teacher", userId)
+                .whereArrayContains("_teacher_ref", userId)
                 .get()
                 .addOnSuccessListener(executorService, queryDocumentSnapshots -> {
                     if (queryDocumentSnapshots != null) {
