@@ -32,6 +32,7 @@ import com.itheamc.hamroclassroom_teachers.viewmodels.MainViewModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class SubmissionsFragment extends Fragment implements FirestoreCallbacks, SubmissionCallbacks {
     private static final String TAG = "SubmissionFragment";
@@ -75,20 +76,44 @@ public class SubmissionsFragment extends Fragment implements FirestoreCallbacks,
         Setting OnRefreshListener on the swipe-refresh layout
          */
         submissionsBinding.swipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.overlay);
-        submissionsBinding.swipeRefreshLayout.setOnRefreshListener(this::getSubmissions);
+        submissionsBinding.swipeRefreshLayout.setOnRefreshListener(() -> {
+            ViewUtils.hideViews(submissionsBinding.noItemFoundLayout);
+            getSubmissions();
+        });
 
         // Get Submissions
+        checkSubmissions();
+    }
+
+    /*
+    Function to check submissions in the ViewModel
+     */
+    private void checkSubmissions() {
+        Map<String, List<Submission>> hashMap= viewModel.getSubmissionsHashMap();
+        if (hashMap == null) {
+            if (viewModel.getAssignment() == null) return;
+            getSubmissions();
+            return;
+        }
+
+        Assignment assignment = viewModel.getAssignment();
+        if (assignment == null) return;
+        List<Submission> submissions = hashMap.get(assignment.get_id());
+        if (submissions != null) {
+            submitListToAdapter(submissions);
+            return;
+        }
+
         getSubmissions();
     }
+
 
     /*
     Functions to get Submissions from cloud
      */
     private void getSubmissions() {
-        if (viewModel.getAssignment() != null) {
-            FirestoreHandler.getInstance(this).getSubmissions(viewModel.getAssignment().get_id());
-            ViewUtils.showProgressBar(submissionsBinding.progressBarContainer);
-        }
+        FirestoreHandler.getInstance(this).getSubmissions(viewModel.getAssignment().get_id());
+        ViewUtils.showProgressBar(submissionsBinding.progressBarContainer);
     }
 
     /*
@@ -96,11 +121,11 @@ public class SubmissionsFragment extends Fragment implements FirestoreCallbacks,
      */
     private void submitListToAdapter(List<Submission> submissions) {
         if (submissions.size() == 0) {
-            ViewUtils.handleNoItemFound(submissionsBinding.noItemFoundLayout);
+            ViewUtils.visibleViews(submissionsBinding.noItemFoundLayout);
             return;
         }
-        submissionAdapter.submitList(submissions);
         viewModel.setSubmissions(submissions);
+        submissionAdapter.submitList(submissions);
     }
 
 
@@ -113,11 +138,32 @@ public class SubmissionsFragment extends Fragment implements FirestoreCallbacks,
     public void onSuccess(User user, List<School> schools, List<Student> students, List<Subject> subjects, List<Assignment> assignments, List<Submission> submissions, List<Notice> notices) {
         if (submissionsBinding == null) return;
         NotifyUtils.logDebug(TAG, "Success");
+
         if (submissions != null) {
+            if (!submissions.isEmpty()) {
+                viewModel.setSubmissionsHashMap(submissions);
+                FirestoreHandler.getInstance(this).getStudents(viewModel.getAssignment().get_subject_ref());
+                return;
+            }
+            ViewUtils.visibleViews(submissionsBinding.noItemFoundLayout);
             ViewUtils.hideProgressBar(submissionsBinding.progressBarContainer);
             ViewUtils.handleRefreshing(submissionsBinding.swipeRefreshLayout);
-            submitListToAdapter(submissions);
+            return;
         }
+
+        if (students != null) {
+            ViewUtils.hideProgressBar(submissionsBinding.progressBarContainer);
+            ViewUtils.handleRefreshing(submissionsBinding.swipeRefreshLayout);
+            if (!students.isEmpty()) {
+                submitListToAdapter(viewModel.getUpdatedSubmissions(viewModel.getAssignment().get_id(), students));
+                return;
+            }
+        }
+
+        // Above condition not meet
+        ViewUtils.hideProgressBar(submissionsBinding.progressBarContainer);
+        ViewUtils.handleRefreshing(submissionsBinding.swipeRefreshLayout);
+
     }
 
     @Override

@@ -245,8 +245,9 @@ public class SubjectFragment extends Fragment implements FirestoreCallbacks, Sch
     Finally adding subject to cloud firestore
      */
     private void addSubject() {
+        Subject subject = null;
         if (!viewModel.isSubjectUpdating()) {
-            Subject subject = new Subject(
+            subject = new Subject(
                     IdGenerator.generateRandomId(),
                     _subject,
                     _class,
@@ -267,7 +268,7 @@ public class SubjectFragment extends Fragment implements FirestoreCallbacks, Sch
         }
 
         // If updating
-        Subject subject = viewModel.getSubject();
+        subject = viewModel.getSubject();
 
         Map<String, Object> data = new HashMap<>();
         String _name = subEditText.getText().toString().trim();

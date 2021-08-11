@@ -236,15 +236,24 @@ public class HomeFragment extends Fragment implements SubjectCallbacks, Firestor
         if (homeBinding == null) return;
 
         if (subjects != null) {
-            ViewUtils.hideProgressBar(homeBinding.progressBarContainer);
-            ViewUtils.handleRefreshing(homeBinding.swipeRefreshLayout);
 
             if (subjects.size() == 0) {
-                ViewUtils.handleNoItemFound(homeBinding.noItemFoundLayout);
+                ViewUtils.hideProgressBar(homeBinding.progressBarContainer);
+                ViewUtils.handleRefreshing(homeBinding.swipeRefreshLayout);
+                ViewUtils.visibleViews(homeBinding.noItemFoundLayout);
                 return;
             }
-            subjectAdapter.submitList(subjects);
+
             viewModel.setSubjects(subjects);
+            FirestoreHandler.getInstance(this).getSchools();
+            return;
+        }
+
+        if (schools != null) {
+            ViewUtils.hideProgressBar(homeBinding.progressBarContainer);
+            ViewUtils.handleRefreshing(homeBinding.swipeRefreshLayout);
+            viewModel.setSchools(schools);
+            subjectAdapter.submitList(viewModel.getUpdatedSubjects(schools));
             return;
         }
 

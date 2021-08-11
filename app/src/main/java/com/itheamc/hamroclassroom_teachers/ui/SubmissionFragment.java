@@ -95,11 +95,8 @@ public class SubmissionFragment extends Fragment implements FirestoreCallbacks {
 
         Submission submission = viewModel.getSubmission();
         if (submission != null) {
-            sliderAdapter.submitList(submission.get_images());
-            submissionBinding.finishCheckingButton.setEnabled(!submission.is_checked());
-            commentEditText.setEnabled(!submission.is_checked());
-            if (submission.is_checked()) submissionBinding.finishCheckingButton.setText("Already Checked");
-            if (submission.get_comment() != null) commentEditText.setText(submission.get_comment());
+            if (submission.get_images() != null) sliderAdapter.submitList(submission.get_images());
+            submissionBinding.setSubmission(submission);
         }
 
 
@@ -146,7 +143,7 @@ public class SubmissionFragment extends Fragment implements FirestoreCallbacks {
     public void onSuccess(User user, List<School> schools, List<Student> students, List<Subject> subjects, List<Assignment> assignments, List<Submission> submissions, List<Notice> notices) {
         if (submissionBinding == null) return;
 
-        if (getContext() != null) NotifyUtils.showToast(getContext(), "Thanks for checking!!");
+        if (getContext() != null) NotifyUtils.showToast(getContext(), "Checked");
         ViewUtils.hideProgressBar(submissionBinding.progressBarContainer);
         ViewUtils.clearEditTexts(commentEditText);
     }

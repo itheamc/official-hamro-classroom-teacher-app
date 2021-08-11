@@ -291,13 +291,9 @@ public class FirestoreHandler {
                 .addOnSuccessListener(executorService, queryDocumentSnapshots -> {
                     if (queryDocumentSnapshots != null) {
                         List<Student> students = queryDocumentSnapshots.toObjects(Student.class);
-                        if (students.size() > 0) {
-                            notifyOnSuccess(null, null, students, null, null, null, null);
-                        } else {
-                            notifyOnFailure(new Exception("Teacher not found"));
-                        }
+                        notifyOnSuccess(null, null, students, null, null, null, null);
                     } else {
-                        notifyOnFailure(new Exception("Teacher not found"));
+                        notifyOnFailure(new Exception("Students not found"));
                     }
                 })
                 .addOnFailureListener(executorService, this::notifyOnFailure);

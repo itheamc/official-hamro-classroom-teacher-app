@@ -12,7 +12,9 @@ import com.itheamc.hamroclassroom_teachers.models.Student;
 import com.itheamc.hamroclassroom_teachers.models.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainViewModel extends ViewModel {
     /*
@@ -40,6 +42,11 @@ public class MainViewModel extends ViewModel {
     */
     private boolean isSubjectUpdating;
 
+    /*
+    Map
+     */
+    private Map<String, List<Assignment>> assignmentsHashMap;
+    private Map<String, List<Submission>> submissionsHashMap;
 
     /*
     Getters and Setters
@@ -148,20 +155,78 @@ public class MainViewModel extends ViewModel {
         isSubjectUpdating = subjectUpdating;
     }
 
+    public Map<String, List<Submission>> getSubmissionsHashMap() {
+        return submissionsHashMap;
+    }
+
+
+    public void setSubmissionsHashMap(List<Submission> _submissions) {
+        if (this.submissionsHashMap == null) submissionsHashMap = new HashMap<>();
+        if (this.submissionsHashMap.get(_submissions.get(0).get_assignment_ref()) != null) {
+            this.submissionsHashMap.replace(_submissions.get(0).get_assignment_ref(), _submissions);
+            return;
+        }
+        this.submissionsHashMap.put(_submissions.get(0).get_assignment_ref(), _submissions);
+    }
+
+
+    public Map<String, List<Assignment>> getAssignmentsHashMap() {
+        return assignmentsHashMap;
+    }
+
+    public void setAssignmentsHashMap(List<Assignment> _assignments) {
+        if (this.assignmentsHashMap == null) assignmentsHashMap = new HashMap<>();
+        if (this.assignmentsHashMap.get(_assignments.get(0).get_subject_ref()) != null) {
+            this.assignmentsHashMap.replace(_assignments.get(0).get_desc(), _assignments);
+            return;
+        }
+        this.assignmentsHashMap.put(_assignments.get(0).get_subject_ref(), _assignments);
+    }
+
+
     /*
-       Function to update subject in List<Subject> subjects
-          */
-    public void addSubjectToList(Subject _subject) {
-        List<Subject> subjectList = new ArrayList<>();
-        for (Subject sub: subjects) {
-            if (sub.get_id().equals(_subject.get_id())) {
-                subjectList.add(_subject);
-                continue;
+          Function to add school on the subject and return the Subject List
+           */
+    public List<Subject> getUpdatedSubjects(List<School> __schools) {
+        List<Subject> updatedSubjects = new ArrayList<>();
+        for (Subject s: subjects) {
+            for (School sc: __schools) {
+                if (!s.get_school_ref().equals(sc.get_id())) continue;
+
+                s.set_school(sc);
+                break;
             }
-            subjectList.add(sub);
+
+            updatedSubjects.add(s);
         }
 
         this.subjects = new ArrayList<>();
-        this.subjects = subjectList;
+        this.subjects.addAll(updatedSubjects);
+        return updatedSubjects;
     }
+
+
+    /*
+    Function to add student on the submission and return the submissions
+     */
+    public List<Submission> getUpdatedSubmissions(String assignment_ref, List<Student> _students) {
+        // Add student in submission
+        List<Submission> updatedSubmissions = new ArrayList<>();
+        List<Submission> oldSubmissions = submissionsHashMap.get(assignment_ref);
+
+        assert oldSubmissions != null;
+        for (Submission sub: oldSubmissions) {
+            for (Student st: _students) {
+                if (!sub.get_student_ref().equals(st.get_id())) continue;
+
+                sub.set_student(st);
+                break;
+            }
+            updatedSubmissions.add(sub);
+        }
+
+        submissionsHashMap.replace(assignment_ref, updatedSubmissions);
+        return updatedSubmissions;
+    }
+
 }

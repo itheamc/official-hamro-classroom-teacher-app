@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.textfield.TextInputLayout;
@@ -43,8 +44,9 @@ import com.itheamc.hamroclassroom_teachers.viewmodels.MainViewModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
 
-public class AssignmentsFragment extends Fragment implements AssignmentCallbacks, FirestoreCallbacks  {
+public class AssignmentsFragment extends Fragment implements AssignmentCallbacks, FirestoreCallbacks {
     private static final String TAG = "AssignmentsFragment";
     private FragmentAssignmentsBinding assignmentsBinding;
     private NavController navController;
@@ -114,22 +116,60 @@ public class AssignmentsFragment extends Fragment implements AssignmentCallbacks
         Setting OnRefreshListener on the swipe-refresh layout
          */
         assignmentsBinding.swipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.overlay);
-        assignmentsBinding.swipeRefreshLayout.setOnRefreshListener(this::getAssignments);
+        assignmentsBinding.swipeRefreshLayout.setOnRefreshListener(() -> {
+            ViewUtils.hideViews(assignmentsBinding.noItemFoundLayout);
+            getAssignments();
+        });
 
         /*
         Getting assignments from cloud
          */
+        checkAssignments();
+    }
+
+
+    /*
+    Function to check submissions in the ViewModel
+     */
+    private void checkAssignments() {
+        Map<String, List<Assignment>> hashMap = viewModel.getAssignmentsHashMap();
+        if (hashMap == null) {
+            if (viewModel.getSubject() == null) return;
+            getAssignments();
+            return;
+        }
+
+        Subject subject = viewModel.getSubject();
+        if (subject == null) return;
+        List<Assignment> assignments = hashMap.get(subject.get_id());
+        if (assignments != null) {
+            submitListToAdapter(assignments);
+            return;
+        }
+
         getAssignments();
     }
+
 
     /*
     Function to get subjects
      */
     private void getAssignments() {
-        if (subject != null) {
-            FirestoreHandler.getInstance(this).getAssignments(subject.get_id());
-            ViewUtils.handleProgressBar(assignmentsBinding.progressBarContainer);
+        FirestoreHandler.getInstance(this).getAssignments(subject.get_id());
+        ViewUtils.handleProgressBar(assignmentsBinding.progressBarContainer);
+    }
+
+
+    /*
+    Function to submit List<Submission> to the SubmissionAdapter
+     */
+    private void submitListToAdapter(List<Assignment> assignments) {
+        if (assignments.size() == 0) {
+            ViewUtils.visibleViews(assignmentsBinding.noItemFoundLayout);
+            return;
         }
+        viewModel.setAssignments(assignments);
+        assignmentAdapter.submitList(assignments);
     }
 
     /*
@@ -143,12 +183,14 @@ public class AssignmentsFragment extends Fragment implements AssignmentCallbacks
         if (viewModel.getAssignment() != null) assignId = viewModel.getAssignment().get_id();
 
         if (subId == null || assignId == null || TextUtils.isEmpty(updatedTitle)) {
-            if (getContext() != null) NotifyUtils.showToast(getContext(), getString(R.string.went_wrong_message));
+            if (getContext() != null)
+                NotifyUtils.showToast(getContext(), getString(R.string.went_wrong_message));
             return;
         }
 
         if (updatedTitle.equals(viewModel.getAssignment().get_title())) {
-            if (getContext() != null) NotifyUtils.showToast(getContext(), "You haven't make any change on title");
+            if (getContext() != null)
+                NotifyUtils.showToast(getContext(), "You haven't make any change on title");
             return;
         }
 
@@ -205,11 +247,11 @@ public class AssignmentsFragment extends Fragment implements AssignmentCallbacks
             ViewUtils.handleProgressBar(assignmentsBinding.progressBarContainer);
             ViewUtils.handleRefreshing(assignmentsBinding.swipeRefreshLayout);
             if (assignments.size() == 0) {
-                ViewUtils.handleNoItemFound(assignmentsBinding.noItemFoundLayout);
+                ViewUtils.visibleViews(assignmentsBinding.noItemFoundLayout);
                 return;
             }
-            viewModel.setAssignments(assignments);
-            assignmentAdapter.submitList(assignments);
+            viewModel.setAssignmentsHashMap(assignments);
+            checkAssignments();
             return;
         }
 

@@ -59,4 +59,5 @@
     <string name="update_comment">Update Comment</string>
     <string name="update_your_assignment_title">Update your assignment title</string>
     <string name="finalizing_uploads">Finalizing Uploads</string>
+    <string name="checked">Checked</string>
 </resources>
